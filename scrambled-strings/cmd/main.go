@@ -5,8 +5,16 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/go-playground/validator/v10"
 	"scrambled-strings/pkg/matcher"
 )
+
+// CLIArgs holds the command-line arguments for validation
+type CLIArgs struct {
+	DictionaryPath string `validate:"required,file,readable"`
+	InputPath      string `validate:"required,file,readable"`
+}
 
 // readLines reads a file and returns its lines as a slice of strings.
 func readLines(filePath string) ([]string, error) {
@@ -27,7 +35,59 @@ func readLines(filePath string) ([]string, error) {
 
 	return lines, nil
 }
+
+// fileExists checks if a file exists.
+func fileExists(fl validator.FieldLevel) bool {
+	path := fl.Field().String()
+	_, err := os.Stat(path)
+	return err == nil
+}
+
+// fileReadable checks if a file is readable.
+func fileReadable(fl validator.FieldLevel) bool {
+	path := fl.Field().String()
+	file, err := os.Open(path)
+	if err != nil {
+		return false
+	}
+	defer file.Close()
+	return true
+}
+
+// validateArgs validates the CLI arguments
+func validateArgs(dictionaryPath, inputPath string) error {
+	validate := validator.New()
+
+	// Register custom validations
+	validate.RegisterValidation("file", fileExists)
+	validate.RegisterValidation("readable", fileReadable)
+
+	args := CLIArgs{
+		DictionaryPath: dictionaryPath,
+		InputPath:      inputPath,
+	}
+
+	if err := validate.Struct(args); err != nil {
+		for _, e := range err.(validator.ValidationErrors) {
+			if e.Field() == "DictionaryPath" {
+				return fmt.Errorf("dictionary file validation failed: %s", e.Tag())
+			}
+			if e.Field() == "InputPath" {
+				return fmt.Errorf("input file validation failed: %s", e.Tag())
+			}
+		}
+	}
+
+	return nil
+}
+
+// run processes the dictionary and input files and counts matches.
 func run(dictionaryPath, inputPath string) error {
+	// Validate arguments
+	if err := validateArgs(dictionaryPath, inputPath); err != nil {
+		return err
+	}
+
 	// Read and preprocess the dictionary
 	dictionaryWords, err := readLines(dictionaryPath)
 	if err != nil {
