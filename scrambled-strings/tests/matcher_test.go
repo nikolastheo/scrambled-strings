@@ -5,15 +5,16 @@ import (
 	"testing"
 )
 
+// TestCanonicalForm validates the canonicalForm function.
 func TestCanonicalForm(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected string
 	}{
-		{"axpaj", "aajpx"},
-		{"apxaj", "aajpx"},
+		{"axpaj", "aapxj"},
+		{"apxaj", "aapxj"},
 		{"dnrbt", "dbnrt"},
-		{"pjxdn", "pdjnx"},
+		{"pjxdn", "pdjxn"},
 		{"a", "a"},
 		{"ab", "ab"},
 	}
@@ -23,5 +24,44 @@ func TestCanonicalForm(t *testing.T) {
 		if result != test.expected {
 			t.Errorf("Expected %s but got %s", test.expected, result)
 		}
+	}
+}
+
+
+// TestPrecomputeCanonicalForms validates dictionary preprocessing.
+func TestPrecomputeCanonicalForms(t *testing.T) {
+	dictionary := []string{"axpaj", "apxaj", "dnrbt", "pjxdn", "abd"}
+	expected := map[string]string{
+		"axpaj": "aapxj",
+		"apxaj": "aapxj",
+		"dnrbt": "dbnrt",
+		"pjxdn": "pdjxn",
+		"abd":   "abd",
+	}
+
+	result := matcher.PrecomputeCanonicalForms(dictionary)
+
+	if len(result) != len(expected) {
+		t.Errorf("Expected %d entries but got %d", len(expected), len(result))
+	}
+
+	for word, canonical := range expected {
+		if result[word] != canonical {
+			t.Errorf("Expected %s -> %s but got %s", word, canonical, result[word])
+		}
+	}
+}
+
+// TestCountMatches validates the matching logic.
+func TestCountMatches(t *testing.T) {
+	dictionary := []string{"axpaj", "apxaj", "dnrbt", "pjxdn", "abd"}
+	precomputed := matcher.PrecomputeCanonicalForms(dictionary)
+	input := "aapxjdnrbtvldptfzbbdbbzxtndrvjblnzjfpvhdhhpxjdnrbt"
+
+	expected := 4
+	result := matcher.CountMatches(precomputed, input)
+
+	if result != expected {
+		t.Errorf("Expected %d matches but got %d", expected, result)
 	}
 }
