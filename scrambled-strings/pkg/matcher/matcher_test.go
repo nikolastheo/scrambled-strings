@@ -1,7 +1,6 @@
-package tests
+package matcher
 
 import (
-	"scrambled-strings/pkg/matcher"
 	"testing"
 )
 
@@ -20,7 +19,7 @@ func TestCanonicalForm(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		result := matcher.CanonicalForm(test.input)
+		result := CanonicalForm(test.input)
 		if result != test.expected {
 			t.Errorf("Expected %s but got %s", test.expected, result)
 		}
@@ -39,7 +38,7 @@ func TestPrecomputeCanonicalForms(t *testing.T) {
 		"abd":   "abd",
 	}
 
-	result := matcher.PrecomputeCanonicalForms(dictionary)
+	result := PrecomputeCanonicalForms(dictionary)
 
 	if len(result) != len(expected) {
 		t.Errorf("Expected %d entries but got %d", len(expected), len(result))
@@ -55,11 +54,11 @@ func TestPrecomputeCanonicalForms(t *testing.T) {
 // TestCountMatches validates the matching logic.
 func TestCountMatches(t *testing.T) {
 	dictionary := []string{"axpaj", "apxaj", "dnrbt", "pjxdn", "abd"}
-	precomputed := matcher.PrecomputeCanonicalForms(dictionary)
+	precomputed := PrecomputeCanonicalForms(dictionary)
 	input := "aapxjdnrbtvldptfzbbdbbzxtndrvjblnzjfpvhdhhpxjdnrbt"
 
 	expected := 4
-	result := matcher.CountMatches(precomputed, input)
+	result := CountMatches(precomputed, input)
 
 	if result != expected {
 		t.Errorf("Expected %d matches but got %d", expected, result)
