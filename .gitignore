@@ -51,3 +51,5 @@ empty_dictionary.txt
 *.pid
 *.sock
 *.pyc
+
+scrambled-strings
