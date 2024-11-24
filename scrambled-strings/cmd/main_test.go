@@ -10,12 +10,15 @@ import (
 
 // Helper function to capture stdout during function execution
 func captureOutput(f func()) string {
-	oldStdout := os.Stdout
 	r, w, _ := os.Pipe()
+	oldStdout := os.Stdout
 	os.Stdout = w
+
 	f()
+
 	w.Close()
 	os.Stdout = oldStdout
+
 	var buf bytes.Buffer
 	io.Copy(&buf, r)
 	return buf.String()
@@ -23,13 +26,11 @@ func captureOutput(f func()) string {
 
 // TestRun validates the main functionality of the `run` function
 func TestRun(t *testing.T) {
-	// Create temporary test files
 	dictionaryPath := "test_dictionary.txt"
 	inputPath := "test_input.txt"
-	defer os.Remove(dictionaryPath) // Clean up after test
+	defer os.Remove(dictionaryPath)
 	defer os.Remove(inputPath)
 
-	// Write test data to temporary files
 	os.WriteFile(dictionaryPath, []byte("axpaj\napxaj\ndnrbt\npjxdn\nabd\n"), 0644)
 	os.WriteFile(inputPath, []byte("aapxjdnrbtvldptfzbbdbbzxtndrvjblnzjfpvhdhhpxjdnrbt\nnothingmatcheshere\n"), 0644)
 
@@ -48,7 +49,6 @@ func TestRun(t *testing.T) {
 
 // TestValidateArgs validates the argument validation logic
 func TestValidateArgs(t *testing.T) {
-	// Create temporary test files
 	dictionaryPath := "test_dictionary.txt"
 	inputPath := "test_input.txt"
 	defer os.Remove(dictionaryPath)
@@ -89,7 +89,6 @@ func TestRunInvalidDictionary(t *testing.T) {
 
 // TestRunInvalidInput checks behavior when the input file is invalid
 func TestRunInvalidInput(t *testing.T) {
-	// Create a valid dictionary file
 	dictionaryPath := "test_dictionary.txt"
 	defer os.Remove(dictionaryPath)
 	os.WriteFile(dictionaryPath, []byte("axpaj\napxaj\ndnrbt\npjxdn\nabd\n"), 0644)
@@ -102,7 +101,6 @@ func TestRunInvalidInput(t *testing.T) {
 
 // TestRunEmptyDictionary tests behavior with an empty dictionary
 func TestRunEmptyDictionary(t *testing.T) {
-	// Create temporary test files
 	dictionaryPath := "empty_dictionary.txt"
 	inputPath := "test_input.txt"
 	defer os.Remove(dictionaryPath)
