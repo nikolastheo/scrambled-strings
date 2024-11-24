@@ -5,10 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/sirupsen/logrus"
-	"github.com/go-playground/validator/v10"
 	"scrambled-strings/pkg/matcher"
+	"github.com/go-playground/validator/v10"
 )
 
 // Set up logger
@@ -85,6 +86,17 @@ func validateArgs(dictionaryPath, inputPath string) error {
 	return nil
 }
 
+// configureLogLevel sets the log level based on the user's input.
+func configureLogLevel(logLevel string) {
+	level, err := logrus.ParseLevel(strings.ToLower(logLevel))
+	if err != nil {
+		log.WithError(err).Warnf("Invalid log level: '%s'. Defaulting to 'info'", logLevel)
+		level = logrus.InfoLevel
+	}
+	log.SetLevel(level)
+	log.WithField("logLevel", level.String()).Info("Log level configured")
+}
+
 // run processes the dictionary and input files and counts matches.
 func run(dictionaryPath, inputPath string) error {
 	log.WithFields(logrus.Fields{
@@ -136,19 +148,22 @@ func main() {
 	log.SetFormatter(&logrus.TextFormatter{
 		FullTimestamp: true,
 	})
-	log.SetLevel(logrus.InfoLevel)
 
-	// Define command-line flags for dictionary and input file paths
+	// Define command-line flags
 	dictionaryPath := flag.String("dictionary", "", "Path to the dictionary file")
 	inputPath := flag.String("input", "", "Path to the input file")
+	logLevel := flag.String("log-level", "info", "Log level (debug, info, warn, error, fatal, panic)")
 	flag.Parse()
 
 	// Ensure both flags are provided
 	if *dictionaryPath == "" || *inputPath == "" {
 		log.Error("Missing required flags")
-		fmt.Println("Usage: ./scrambled-strings --dictionary <path> --input <path>")
+		fmt.Println("Usage: ./scrambled-strings --dictionary <path> --input <path> [--log-level <level>]")
 		os.Exit(1)
 	}
+
+	// Configure log level
+	configureLogLevel(*logLevel)
 
 	// Run the main logic and handle errors
 	if err := run(*dictionaryPath, *inputPath); err != nil {
