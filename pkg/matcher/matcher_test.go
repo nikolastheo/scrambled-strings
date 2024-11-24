@@ -26,7 +26,6 @@ func TestCanonicalForm(t *testing.T) {
 	}
 }
 
-
 // TestPrecomputeCanonicalForms validates dictionary preprocessing.
 func TestPrecomputeCanonicalForms(t *testing.T) {
 	dictionary := []string{"axpaj", "apxaj", "dnrbt", "pjxdn", "abd"}
