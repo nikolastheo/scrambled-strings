@@ -1,0 +1,53 @@
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go binary output
+*.out
+*.test
+
+# Build directories
+bin/
+build/
+
+# Dependency directories
+vendor/
+
+# Go module files
+go.sum
+
+# IDE and editor-specific files
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+
+# Docker
+docker-compose.override.yml
+.env
+.env.*
+
+# Test outputs and artifacts
+*.coverprofile
+coverage.out
+test_dictionary.txt
+test_input.txt
+empty_input.txt
+empty_dictionary.txt
+
+# Custom
+*.pid
+*.sock
+*.pyc
